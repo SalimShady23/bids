@@ -56,7 +56,7 @@
                     </ul>
                     <ul class="cart-button-area">
                         <li>
-                            <a href="#0" class="cart-button"><i class="flaticon-shopping-basket"></i><span class="amount">08</span></a>
+                        <a href="#0" class="cart-button"><i class="flaticon-alarm"></i><span class="amount">{{ $data['count_notifications'] }}</span></a>
                         </li>                        
                         <li>
                             @if(Auth::check())
@@ -78,13 +78,13 @@
             <div class="container">
                 <div class="header-wrapper">
                     <div class="logo">
-                        <a href="index.html">
+                        <a href="/">
                             <img src="assets/images/logo/loogo.png" alt="logo">
                         </a>
                     </div>
                     <ul class="menu ml-auto">
                         <li>
-                            <a href="index.html">Home</a>
+                            <a href="/">Home</a>
                          
                         </li>
                         <li>
@@ -122,10 +122,10 @@
                                     <a href="#0">Dashboard</a>
                                     <ul class="submenu">
                                         <li>
-                                            <a href="dashboard.html">Dashboard</a>
+                                            <a href="/dashboard">Dashboard</a>
                                         </li>
                                         <li>
-                                            <a href="profile.html">Personal Profile</a>
+                                            <a href="/profile">Personal Profile</a>
                                         </li>
                                         <li>
                                             <a href="my-bid.html">My Bids</a>
@@ -159,12 +159,6 @@
                         <li>
                             <a href="#0">My Account</a>
                             <ul class="submenu">
-                                <li>
-                                    <a href="/dashboard">Dashboard</a>
-                                </li>
-                                <li>
-                                    <a href="/add_listing">Add listing</a>
-                                </li>
                                 <li>
                                     <a href="/profile">Profile</a>
                                 </li>
@@ -203,67 +197,45 @@
     <!--============= Cart Section Starts Here =============-->
     <div class="cart-sidebar-area">
         <div class="top-content">
-            <a href="index.html" class="logo">
-                <img src="assets/images/logo/logo2.png" alt="logo">
+            <a href="/" class="logo">
+                <img src="assets/images/logo/loogo.png" alt="logo">
             </a>
             <span class="side-sidebar-close-btn"><i class="fas fa-times"></i></span>
         </div>
         <div class="bottom-content">
             <div class="cart-products">
-                <h4 class="title">Shopping cart</h4>
+                <h4 class="title">Alerts</h4>
+                @if(count($data['notifications']) > 0)
+                @foreach($data['notifications'] as $notification)
                 <div class="single-product-item">
                     <div class="thumb">
-                        <a href="#0"><img src="assets/images/shop/shop01.jpg" alt="shop"></a>
+                        <a href="#0"><img src="assets/images/history/04.png"></a>
                     </div>
                     <div class="content">
-                        <h4 class="title"><a href="#0">Color Pencil</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
+                        <h3 class="title">
+                            <a href="">
+                            @if($notification->user_role == 2)
+                            {{ ucwords(strtolower($notification->business_name)) }}
+                            @elseif($notification->user_role == 3)
+                            {{ ucwords(strtolower($notification->first_name)) }} {{ ucwords(strtolower($notification->last_name)) }}
+                            @endif
+                            </a>
+                        </h3>
+                        <div class="price" style="font-size: 15px;">
+                            @if($notification->notification_type == "BUY NOW")
+                            Has confirmed to buy now your {{ ucwords(strtolower($notification->product_name)) }}
+                            @elseif($notification->notification_type == "RECEIPT")
+                            Has uploaded receipt for your {{ ucwords(strtolower($notification->product_name)) }}
+                            @endif
+                        </div>
                     </div>
                 </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="assets/images/shop/shop02.jpg" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Water Pot</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
+                @endforeach
+                @else
+                <div class="alert alert-warning">
+                There are no alerts currently
                 </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="assets/images/shop/shop03.jpg" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Art Paper</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
-                </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="assets/images/shop/shop04.jpg" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Stop Watch</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
-                </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="assets/images/shop/shop05.jpg" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Comics Book</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
-                </div>
-                <div class="btn-wrapper text-center">
-                    <a href="#0" class="custom-button"><span>Checkout</span></a>
-                </div>
+                @endif
             </div>
         </div>
     </div>
@@ -271,17 +243,17 @@
 
 
     <!--============= Hero Section Starts Here =============-->
-    <div class="hero-section style-2">
+    <div class="hero-section style-2 pb-lg-400">
         <div class="container">
             <ul class="breadcrumb">
                 <li>
-                    <a href="index.html">Home</a>
+                    <a href="/">Home</a>
                 </li>
                 <li>
                     <a href="#0">My Account</a>
                 </li>
                 <li>
-                    <span>My Bids</span>
+                    <span>Dashboard</span>
                 </li>
             </ul>
         </div>
@@ -291,11 +263,11 @@
 
 
     <!--============= Dashboard Section Starts Here =============-->
-    <section class="dashboard-section padding-bottom mt--240 mt-lg--440 pos-rel">
+    <section class="dashboard-section padding-bottom mt--240 mt-lg--325 pos-rel">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-sm-10 col-md-7 col-lg-4">
-                    <div class="dashboard-widget mb-30 mb-lg-0 sticky-menu">
+                    <div class="dashboard-widget mb-30 mb-lg-0">
                         <div class="user">
                             <div class="thumb-area">
                                 <div class="thumb">
@@ -307,7 +279,7 @@
                             <div class="content">
                                 <h5 class="title"><a href="#0">{{ Auth::user()->username }}</a></h5>
                                 <span class="username">{{ Auth::user()->email }}</span>
-                                <div class="mt-2">
+                                <div>
                                     <a href="/add_listing" class="btn btn-primary">Add Listing</a>
                                 </div>
                             </div>
@@ -316,6 +288,7 @@
                             <li>
                                 <a href="/dashboard"><i class="flaticon-dashboard"></i>Dashboard</a>
                             </li>
+                            
                             <li>
                                 <a href="/profile"><i class="flaticon-settings"></i>Personal Profile </a>
                             </li>
@@ -329,7 +302,7 @@
                                 <a href="winning-bids.html"><i class="flaticon-best-seller"></i>Winning Bids</a>
                             </li>
                             <li>
-                                <a href="notifications.html"><i class="flaticon-alarm"></i>My Alerts</a>
+                                <a href="/my-alerts"><i class="flaticon-alarm"></i>My Alerts</a>
                             </li>
                             <li>
                                 <a href="/invoices" class="active"><i class="flaticon-star"></i>Invoices</a>
@@ -341,205 +314,113 @@
                     </div>
                 </div>
                 <div class="col-lg-8">
-                    <div class="dash-bid-item dashboard-widget mb-40-60">
-                        <div class="header">
-                            <h4 class="title">Invoices</h4>
-                        </div>
-                        <ul class="button-area nav nav-tabs">
-                            <li>
-                                <a href="#upcoming" data-toggle="tab" class="custom-button active">Recent</a>
-                            </li>
-                            <li>
-                                <a href="#past" data-toggle="tab" class="custom-button">Past</a>
-                            </li>
-                        </ul>
-
-                        <!-- Success message -->
-                        @if(session('success'))
-                            <div class="alert alert-success mt-2" role="alert">
-                                {{ session('success') }}
-                            </div>
-                        @endif
-
-                    </div>
-                    <div class="tab-content">
-                        <div class="tab-pane fade show active" id="upcoming">
-
-                               
-                        </div>
-                        <div class="tab-pane fade" id="past">
-                            <div class="row justify-content-center mb-30-none">
-                                <div class="col-sm-10 col-md-6">
-                                    <div class="auction-item-2">
-                                        <div class="auction-thumb">
-                                            <a href="product-details.html"><img src="assets/images/auction/jewelry/auction-1.jpg" alt="jewelry"></a>
-                                            <a href="#0" class="rating"><i class="far fa-star"></i></a>
-                                            <a href="#0" class="bid"><i class="flaticon-auction"></i></a>
-                                        </div>
-                                        <div class="auction-content">
-                                            <h6 class="title">
-                                                <a href="product-details.html">Gold Ring With Clear Stones</a>
-                                            </h6>
-                                            <div class="bid-area">
-                                                <div class="bid-amount">
-                                                    <div class="icon">
-                                                        <i class="flaticon-auction"></i>
-                                                    </div>
-                                                    <div class="amount-content">
-                                                        <div class="current">Current Bid</div>
-                                                        <div class="amount">$876.00</div>
-                                                    </div>
-                                                </div>
-                                                <div class="bid-amount">
-                                                    <div class="icon">
-                                                        <i class="flaticon-money"></i>
-                                                    </div>
-                                                    <div class="amount-content">
-                                                        <div class="current">Buy Now</div>
-                                                        <div class="amount">$5,00.00</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="countdown-area">
-                                                <div class="countdown">
-                                                    <div id="bid_counter23"></div>
-                                                </div>
-                                                <span class="total-bids">30 Bids</span>
-                                            </div>
-                                            <div class="text-center">
-                                                <a href="#0" class="custom-button">Submit a bid</a>
-                                            </div>
-                                        </div>
-                                    </div>
+                    <div class="dashboard-widget">
+                        <h5 class="title mb-10">Invoices</h5>
+                        <div class="dashboard-purchasing-tabs">
+                            <ul class="nav-tabs nav">
+                                <li>
+                                    <a href="#current" class="active" data-toggle="tab">Current</a>
+                                </li>
+                                <li>
+                                    <a href="#pending" data-toggle="tab">Paid</a>
+                                </li>
+                                <li>
+                                    <a href="#history" data-toggle="tab">Unpaid</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane show active fade" id="current">
+                                    <table class="purchasing-table">
+                                        <thead>
+                                            <th>Item</th>
+                                            <th>Amount</th>
+                                            <th>Type</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </thead>
+                                        <tbody>
+                                            @if(count($invoices) > 0)
+                                            @foreach($invoices as $invoice)
+                                            <tr>
+                                                <td data-purchase="item">{{ $invoice->product_name }}</td>
+                                                <td data-purchase="bid price">{{ number_format($invoice->invoice_amount) }} TZS</td>
+                                                <td data-purchase="highest bid">{{ ucwords(strtolower($invoice->invoice_type)) }}</td>
+                                                <td data-purchase="lowest bid">
+                                                    @if($invoice->invoice_status == "PENDING")
+                                                        <a href="#" class="btn btn-sm btn-danger">Unpaid</a>
+                                                    @elseif($invoice->invoice_status == "PAID")
+                                                        <a href="#" class="btn btn-sm btn-success">Paid</a>
+                                                    @endif
+                                                </td>
+                                                <td data-purchase="expires"><a href="/invoice/{{ $invoice->id }}" class="btn btn-primary btn-sm">View invoice</a></td>
+                                            </tr>
+                                            @endforeach
+                                            @else
+                                            <div class="alert alert-warning">
+                                                There are currently no invoices for you
+                                            </div>                                            
+                                            @endif
+                                            
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <div class="col-sm-10 col-md-6">
-                                    <div class="auction-item-2">
-                                        <div class="auction-thumb">
-                                            <a href="product-details.html"><img src="assets/images/auction/jewelry/auction-2.jpg" alt="jewelry"></a>
-                                            <a href="#0" class="rating"><i class="far fa-star"></i></a>
-                                            <a href="#0" class="bid"><i class="flaticon-auction"></i></a>
-                                        </div>
-                                        <div class="auction-content">
-                                            <h6 class="title">
-                                                <a href="product-details.html">Ring With Clear Stone Accents</a>
-                                            </h6>
-                                            <div class="bid-area">
-                                                <div class="bid-amount">
-                                                    <div class="icon">
-                                                        <i class="flaticon-auction"></i>
-                                                    </div>
-                                                    <div class="amount-content">
-                                                        <div class="current">Current Bid</div>
-                                                        <div class="amount">$876.00</div>
-                                                    </div>
-                                                </div>
-                                                <div class="bid-amount">
-                                                    <div class="icon">
-                                                        <i class="flaticon-money"></i>
-                                                    </div>
-                                                    <div class="amount-content">
-                                                        <div class="current">Buy Now</div>
-                                                        <div class="amount">$5,00.00</div>
-                                                    </div>
-                                                </div>
+                                <div class="tab-pane show fade" id="pending">
+                                    <table class="purchasing-table">
+                                        <thead>
+                                            <th>Item</th>
+                                            <th>Amount</th>
+                                            <th>Type</th>
+                                            <th>Payment method</th>
+                                            <th>Action</th>
+                                        </thead>
+                                        <tbody>
+                                            @if(count($paid_invoices) > 0)
+                                            @foreach($paid_invoices as $invoice)
+                                            <tr>
+                                                <td data-purchase="item">{{ $invoice->product_name }}</td>
+                                                <td data-purchase="bid price">{{ number_format($invoice->invoice_amount) }} TZS</td>
+                                                <td data-purchase="highest bid">{{ ucwords(strtolower($invoice->invoice_type)) }}</td>
+                                                <td class="text-center" data-purchase="lowest bid">{{ ucwords(strtolower($invoice->payment_method)) }}</td>
+                                                <td data-purchase="expires"><a href="/invoice/{{ $invoice->id }}" class="btn btn-primary btn-sm">View invoice</a></td>
+                                            </tr>
+                                            @endforeach
+                                            @else
+                                            <div class="alert alert-warning">
+                                                There are currently no paid invoices for you
                                             </div>
-                                            <div class="countdown-area">
-                                                <div class="countdown">
-                                                    <div id="bid_counter24"></div>
-                                                </div>
-                                                <span class="total-bids">30 Bids</span>
-                                            </div>
-                                            <div class="text-center">
-                                                <a href="#0" class="custom-button">Submit a bid</a>
-                                            </div>
-                                        </div>
-                                    </div>
+                                            @endif
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <div class="col-sm-10 col-md-6">
-                                    <div class="auction-item-2">
-                                        <div class="auction-thumb">
-                                            <a href="product-details.html"><img src="assets/images/auction/jewelry/auction-3.jpg" alt="jewelry"></a>
-                                            <a href="#0" class="rating"><i class="far fa-star"></i></a>
-                                            <a href="#0" class="bid"><i class="flaticon-auction"></i></a>
-                                        </div>
-                                        <div class="auction-content">
-                                            <h6 class="title">
-                                                <a href="product-details.html">Gold Ring With Clear Stones</a>
-                                            </h6>
-                                            <div class="bid-area">
-                                                <div class="bid-amount">
-                                                    <div class="icon">
-                                                        <i class="flaticon-auction"></i>
-                                                    </div>
-                                                    <div class="amount-content">
-                                                        <div class="current">Current Bid</div>
-                                                        <div class="amount">$876.00</div>
-                                                    </div>
-                                                </div>
-                                                <div class="bid-amount">
-                                                    <div class="icon">
-                                                        <i class="flaticon-money"></i>
-                                                    </div>
-                                                    <div class="amount-content">
-                                                        <div class="current">Buy Now</div>
-                                                        <div class="amount">$5,00.00</div>
-                                                    </div>
-                                                </div>
+                                <div class="tab-pane show fade" id="history">
+                                    <table class="purchasing-table">
+                                        <thead>
+                                            <th>Item</th>
+                                            <th>Amount</th>
+                                            <th>Type</th>
+                                            <th>Payment method</th>
+                                            <th>Action</th>
+                                        </thead>
+                                        <tbody>
+                                            @if(count($unpaid_invoices) > 0)
+                                            @foreach($unpaid_invoices as $invoice)
+                                            <tr>
+                                                <td data-purchase="item">{{ $invoice->product_name }}</td>
+                                                <td data-purchase="bid price">{{ number_format($invoice->invoice_amount) }} TZS</td>
+                                                <td data-purchase="highest bid">{{ ucwords(strtolower($invoice->invoice_type)) }}</td>
+                                                <td class="text-center" data-purchase="lowest bid">{{ ucwords(strtolower($invoice->payment_method)) }}</td>
+                                                <td data-purchase="expires"><a href="/invoice/{{ $invoice->id }}" class="btn btn-primary btn-sm">View invoice</a></td>
+                                            </tr>
+                                            @endforeach
+                                            @else
+                                            <div class="alert alert-warning">
+                                                There are currently no unpaid invoices for you
                                             </div>
-                                            <div class="countdown-area">
-                                                <div class="countdown">
-                                                    <div id="bid_counter25"></div>
-                                                </div>
-                                                <span class="total-bids">30 Bids</span>
-                                            </div>
-                                            <div class="text-center">
-                                                <a href="#0" class="custom-button">Submit a bid</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-10 col-md-6">
-                                    <div class="auction-item-2">
-                                        <div class="auction-thumb">
-                                            <a href="product-details.html"><img src="assets/images/auction/product/04.png" alt="jewelry"></a>
-                                            <a href="#0" class="rating"><i class="far fa-star"></i></a>
-                                            <a href="#0" class="bid"><i class="flaticon-auction"></i></a>
-                                        </div>
-                                        <div class="auction-content">
-                                            <h6 class="title">
-                                                <a href="product-details.html">Gold Ring With Clear Stones</a>
-                                            </h6>
-                                            <div class="bid-area">
-                                                <div class="bid-amount">
-                                                    <div class="icon">
-                                                        <i class="flaticon-auction"></i>
-                                                    </div>
-                                                    <div class="amount-content">
-                                                        <div class="current">Current Bid</div>
-                                                        <div class="amount">$876.00</div>
-                                                    </div>
-                                                </div>
-                                                <div class="bid-amount">
-                                                    <div class="icon">
-                                                        <i class="flaticon-money"></i>
-                                                    </div>
-                                                    <div class="amount-content">
-                                                        <div class="current">Buy Now</div>
-                                                        <div class="amount">$5,00.00</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="countdown-area">
-                                                <div class="countdown">
-                                                    <div id="bid_counter30"></div>
-                                                </div>
-                                                <span class="total-bids">30 Bids</span>
-                                            </div>
-                                            <div class="text-center">
-                                                <a href="#0" class="custom-button">Submit a bid</a>
-                                            </div>
-                                        </div>
-                                    </div>
+                                            @endif
+                                            
+                                            
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -634,7 +515,7 @@
                             <h5 class="title">About Us</h5>
                             <ul class="links-list">
                                 <li>
-                                    <a href="#0">About EasyBids</a>
+                                    <a href="#0">About Sbidu</a>
                                 </li>
                                 <li>
                                     <a href="#0">Help</a>
@@ -690,7 +571,7 @@
                                     <a href="#0"><i class="fas fa-blender-phone"></i>(646) 968-0608</a>
                                 </li>
                                 <li>
-                                    <a href="#0"><i class="fas fa-envelope-open-text"></i><span class="__cf_email__" data-cfemail="1b737e776b5b7e757c746f737e767e35787476">[email&#160;protected]</span></a>
+                                    <a href="#0"><i class="fas fa-envelope-open-text"></i><span class="__cf_email__" data-cfemail="cfa7aaa3bf8faaa1a8a0bba7aaa2aae1aca0a2">[email&#160;protected]</span></a>
                                 </li>
                                 <li>
                                     <a href="#0"><i class="fas fa-location-arrow"></i>1201 Broadway Suite</a>
@@ -720,7 +601,7 @@
                 <div class="copyright-area">
                     <div class="footer-bottom-wrapper">
                         <div class="logo">
-                            <a href="index.html"><img src="assets/images/logo/foooter-logo.png" alt="logo"></a>
+                            <a href="/"><img src="assets/images/logo/foooter-logo.png" alt="logo"></a>
                         </div>
                         <ul class="gateway-area">
                             <li>

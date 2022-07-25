@@ -469,7 +469,7 @@
                   <thead>
                   <tr>
                     <th>#</th>
-                    <th>Username</th>
+                    <th>Item</th>
                     <th>Invoice amount</th>
                     <th>Status</th>
                     <th>Action</th>
@@ -478,32 +478,42 @@
                   <tbody>
 
                     <?php $i = 0; ?>
+                    @if(count($payments))
+
                     @foreach($payments as $payment)
                     <tr>
                         <td>
                             {{ ++$i; }}
                         </td>
                         <td>
-                            {{ ucwords(strtolower($payment->username)) }}
+                            {{ ucwords(strtolower($payment->product_name)) }}
                         </td>
                         <td>
                             {{ number_format($payment->invoice_amount) }} TZS
                         </td>
                         <td>
-                            @if($payment->invoice_status == "PENDING")
+                            @if($payment->receipt_status == "PENDING")
                             <button class="btn btn-danger text-white">Unpaid</button>
-                            @elseif($payment->invoice_status == "PAID")
+                            @elseif($payment->receipt_status == "PAID")
                             <button class="btn btn-success text-white">Paid</button>
+                            @elseif($payment->receipt_status == "DENIED")
+                            <button class="btn btn-danger text-white">Denied</button>
                             @endif
                         </td>
                         <td>
                             <a class="btn btn-primary" id="show-payment" data-url="{{ route('buy_now_payments.show', $payment->fk_user) }}" data-toggle="modal" data-target="#viewPaymentModal">
-                              <i class="fa fa-eye"></i>
+                             View receipt <i class="fa fa-eye ml-2"></i>
                             </a>
                         </td>
                     </tr>
                     @endforeach
 
+                    @else
+                    <div class="alert alert-warning text-white">
+                    There are no buy now payments available
+                    </div>
+                    @endif
+                    
                     <!-- View Modal -->
                     <div class="modal fade" id="viewPaymentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
@@ -645,41 +655,13 @@
 
                                       <div class="row">
                                         <div class="col-sm-6">
-                                            Receipt file
+                                          Invoice amount
                                         </div>
                                         <div class="col-sm-6">
-                                            <a href="/receipt/{{ $payment->receipt_image }}" class="btn btn-info" download>Download receipt</a>
+                                          <span id="invoice_amount"></span>
                                         </div>
                                       </div>
-
-                                      <div class="row">
-                                        <div class="col-sm-6">
-                                            Invoice amount
-                                        </div>
-                                        <div class="col-sm-6">
-                                            {{ number_format($payment->invoice_amount) }} TZS
-                                        </div>
-                                      </div>
-
-                                      <div class="row">
-                                        <div class="col-sm-6">
-                                            Invoice type
-                                        </div>
-                                        <div class="col-sm-6">
-                                            {{ ucwords(strtolower($payment->invoice_type)) }}
-                                        </div>
-                                      </div>
-
-                                      <div class="row">
-                                        <div class="col-sm-6">
-                                            Created at
-                                        </div>
-                                        <div class="col-sm-6">
-                                            {{ date('l jS \of F Y', strtotime($payment->created_at)) }}
-                                        </div>
-                                      </div>
-
-
+                                  
                                       </div>
                                   </div>
                               </div>
@@ -694,11 +676,9 @@
                                         
                                         <form action="{{ url('/controlPayment') }}" method="POST">
                                             @csrf
-                                            <input type="hidden" name="receipt_id" value="{{ $payment->id }}">
-                                            <input type="hidden" name="invoice_id" value="{{ $payment->fk_invoice }}">
-                                            <input type="hidden" name="auction_id" value="{{ $payment->fk_auction }}">
+                                            
                                             <div class="row">
-                                                <div class="col-sm-6">
+                                                <div class="col-sm-12">
                                                     <div class="form-group">
                                                         <label for="form-label">Receipt action</label>
                                                         <select name="receipt_action" class="form-control">
@@ -795,28 +775,29 @@
 
               $('#viewPaymentModal').modal('show');
               
-              if (data.user_role == 2) {
+              if (data.user.user_role == 2) {
 
                 $("#business_view").show();
                 $("#personal_view").hide();
-                $("#busines_name").text(data.business_name);
-                $("#brella_num").text(data.brella_number);
-                $("#busines_email").text(data.email);
-                $("#busines_mobile").text(data.mobile);
-                $("#region").text(data.region);
-                $("#street_address").text(data.street_address);
+                $("#busines_name").text(data.user.business_name);
+                $("#brella_num").text(data.user.brella_number);
+                $("#busines_email").text(data.user.email);
+                $("#busines_mobile").text(data.user.mobile);
+                $("#region").text(data.user.region);
+                $("#street_address").text(data.user.street_address);
                  
-              } else if (data.user_role == 3) {
+              } else if (data.user.user_role == 3) {
 
                 $("#personal_view").show();
-                $("#per_firstname").text(data.first_name);
-                $("#per_lastname").text(data.last_name);
-                $("#per_username").text(data.username);
-                $("#per_email").text(data.email);
-                $("#per_mobile").text(data.mobile);
+                $("#per_firstname").text(data.user.first_name);
+                $("#per_lastname").text(data.user.last_name);
+                $("#per_username").text(data.user.username);
+                $("#per_email").text(data.user.email);
+                $("#per_mobile").text(data.user.mobile);
                 $("#business_view").hide();
 
               }
+
           })
        });
     });

@@ -56,7 +56,7 @@
                     </ul>
                     <ul class="cart-button-area">
                         <li>
-                            <a href="#0" class="cart-button"><i class="flaticon-shopping-basket"></i><span class="amount">08</span></a>
+                        <a href="#0" class="cart-button"><i class="flaticon-alarm"></i><span class="amount">{{ $data['count_notifications'] }}</span></a>
                         </li>                        
                         <li>
                             @if(Auth::check())
@@ -198,66 +198,44 @@
     <div class="cart-sidebar-area">
         <div class="top-content">
             <a href="index.html" class="logo">
-                <img src="assets/images/logo/logo2.png" alt="logo">
+                <img src="assets/images/logo/loogo.png" alt="logo">
             </a>
             <span class="side-sidebar-close-btn"><i class="fas fa-times"></i></span>
         </div>
         <div class="bottom-content">
             <div class="cart-products">
-                <h4 class="title">Shopping cart</h4>
+                <h4 class="title">Alerts</h4>
+                @if(count($data['notifications']) > 0)
+                @foreach($data['notifications'] as $notification)
                 <div class="single-product-item">
                     <div class="thumb">
-                        <a href="#0"><img src="assets/images/shop/shop01.jpg" alt="shop"></a>
+                        <a href="#0"><img src="assets/images/history/04.png"></a>
                     </div>
                     <div class="content">
-                        <h4 class="title"><a href="#0">Color Pencil</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
+                        <h3 class="title">
+                            <a href="">
+                            @if($notification->user_role == 2)
+                            {{ ucwords(strtolower($notification->business_name)) }}
+                            @elseif($notification->user_role == 3)
+                            {{ ucwords(strtolower($notification->first_name)) }} {{ ucwords(strtolower($notification->last_name)) }}
+                            @endif
+                            </a>
+                        </h3>
+                        <div class="price" style="font-size: 15px;">
+                            @if($notification->notification_type == "BUY NOW")
+                            Has confirmed to buy now your {{ ucwords(strtolower($notification->product_name)) }}
+                            @elseif($notification->notification_type == "RECEIPT")
+                            Has uploaded receipt for your {{ ucwords(strtolower($notification->product_name)) }}
+                            @endif
+                        </div>
                     </div>
                 </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="assets/images/shop/shop02.jpg" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Water Pot</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
+                @endforeach
+                @else
+                <div class="alert alert-warning">
+                There are no alerts currently
                 </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="assets/images/shop/shop03.jpg" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Art Paper</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
-                </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="assets/images/shop/shop04.jpg" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Stop Watch</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
-                </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="assets/images/shop/shop05.jpg" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Comics Book</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
-                </div>
-                <div class="btn-wrapper text-center">
-                    <a href="#0" class="custom-button"><span>Checkout</span></a>
-                </div>
+                @endif
             </div>
         </div>
     </div>
@@ -323,7 +301,7 @@
                                 <a href="winning-bids.html"><i class="flaticon-best-seller"></i>Winning Bids</a>
                             </li>
                             <li>
-                                <a href="notifications.html"><i class="flaticon-alarm"></i>My Alerts</a>
+                                <a href="/my-alerts"><i class="flaticon-alarm"></i>My Alerts</a>
                             </li>
                             <li>
                                 <a href="/invoices"><i class="flaticon-star"></i>Invoices</a>
@@ -409,6 +387,12 @@
                                                                 1 bid 
                                                             @elseif($auction->num_bids > 1)
                                                                 {{ $auction->num_bids }} Bids
+                                                            @endif
+                                                            |
+                                                            @if($auction->buy_now_status == 0)
+                                                                0 buy
+                                                            @elseif($auction->buy_now_status == 1)
+                                                                1 buy 
                                                             @endif
                                                         </span>
                                                     </div>

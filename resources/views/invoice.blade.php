@@ -171,7 +171,7 @@ hr {
                     </ul>
                     <ul class="cart-button-area">
                         <li>
-                            <a href="#0" class="cart-button"><i class="flaticon-shopping-basket"></i><span class="amount">08</span></a>
+                            <a href="#0" class="cart-button"><i class="flaticon-alarm"></i><span class="amount">{{ $data['count_notifications'] }}</span></a>
                         </li>                        
                         <li>
                             @if(Auth::check())
@@ -316,66 +316,44 @@ hr {
     <div class="cart-sidebar-area">
         <div class="top-content">
             <a href="/" class="logo">
-                <img src="{{ url('/assets/images/logo/loogo2.png') }}" alt="logo">
+                <img src="{{ url('/assets/images/logo/loogo.png') }}" alt="logo">
             </a>
             <span class="side-sidebar-close-btn"><i class="fas fa-times"></i></span>
         </div>
         <div class="bottom-content">
             <div class="cart-products">
-                <h4 class="title">Shopping cart</h4>
+                <h4 class="title">Alerts</h4>
+                @if(count($data['notifications']) > 0)
+                @foreach($data['notifications'] as $notification)
                 <div class="single-product-item">
                     <div class="thumb">
-                        <a href="#0"><img src="{{ url('/assets/images/shop/shop01.jpg') }}" alt="shop"></a>
+                        <a href="#0"><img src="assets/images/history/04.png"></a>
                     </div>
                     <div class="content">
-                        <h4 class="title"><a href="#0">Color Pencil</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
+                        <h3 class="title">
+                            <a href="">
+                            @if($notification->user_role == 2)
+                            {{ ucwords(strtolower($notification->business_name)) }}
+                            @elseif($notification->user_role == 3)
+                            {{ ucwords(strtolower($notification->first_name)) }} {{ ucwords(strtolower($notification->last_name)) }}
+                            @endif
+                            </a>
+                        </h3>
+                        <div class="price" style="font-size: 15px;">
+                            @if($notification->notification_type == "BUY NOW")
+                            Has confirmed to buy now your {{ ucwords(strtolower($notification->product_name)) }}
+                            @elseif($notification->notification_type == "RECEIPT")
+                            Has uploaded receipt for your {{ ucwords(strtolower($notification->product_name)) }}
+                            @endif
+                        </div>
                     </div>
                 </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="{{ url('/assets/images/shop/shop02.jpg') }}" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Water Pot</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
+                @endforeach
+                @else
+                <div class="alert alert-warning">
+                There are no alerts currently
                 </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="{{ url('/assets/images/shop/shop03.jpg') }}" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Art Paper</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
-                </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="{{ url('/assets/images/shop/shop04.jpg') }}" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Stop Watch</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
-                </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="{{ url('/assets/images/shop/shop05.jpg') }}" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Comics Book</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
-                </div>
-                <div class="btn-wrapper text-center">
-                    <a href="#0" class="custom-button"><span>Checkout</span></a>
-                </div>
+                @endif
             </div>
         </div>
     </div>
@@ -390,7 +368,10 @@ hr {
                     <a href="/">Home</a>
                 </li>
                 <li>
-                    <a href="/invoice">Invoice</a>
+                    <a href="/invoices">Invoices</a>
+                </li>
+                <li>
+                    <a href="/invoice/{{ $invoice[0]->id }}">My Invoice</a>
                 </li>
             </ul>
         </div>
@@ -475,6 +456,8 @@ hr {
                                         <span class="text-600 text-110 text-blue align-middle">
                                             @if($invoice[0]->business_name)
                                                 {{ ucwords(strtolower($invoice[0]->business_name)) }}
+                                            @elseif($invoice[0]->first_name || $invoice[0]->last_name)
+                                                {{ ucwords(strtolower($invoice[0]->first_name))}} {{ ucwords(strtolower($invoice[0]->last_name)) }}
                                             @endif
                                         </span>
                                     </div>
@@ -501,7 +484,7 @@ hr {
 
                                         <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">Status:</span>
                                          @if($invoice[0]->invoice_status == "PENDING")
-                                         <span class="badge badge-warning badge-pill px-25 text-white">Unpaid</span>
+                                         <span class="badge badge-danger badge-pill px-25 text-white">Unpaid</span>
                                          @elseif($invoice[0]->invoice_status == "PAID")
                                          <span class="badge badge-success badge-pill px-25 text-white">Paid</span>
                                          @elseif($invoice[0]->invoice_status == "INACTIVE")
@@ -525,9 +508,9 @@ hr {
                                 <div class="text-95 text-secondary-d3">
                                     <div class="row mb-2 mb-sm-0 py-25">
                                         <div class="d-none d-sm-block col-1">1</div>
-                                        <div class="col-9 col-sm-5">{{ $invoice[0]->product_name }}</div>
-                                        <div class="d-none d-sm-block col-2">{{ $invoice[0]->condition }}</div>
-                                        <div class="d-none d-sm-block col-2 text-95">{{ $invoice[0]->district }}</div>
+                                        <div class="col-9 col-sm-5">{{ ucwords(strtolower($invoice[0]->product_name)) }}</div>
+                                        <div class="d-none d-sm-block col-2">{{ ucwords(strtolower($invoice[0]->condition)) }}</div>
+                                        <div class="d-none d-sm-block col-2 text-95">{{ ucwords(strtolower($invoice[0]->district)) }}</div>
                                         <div class="col-2 text-secondary-d2">{{ number_format($invoice[0]->invoice_amount) }} TZS</div>
                                     </div>
                                 </div>
@@ -614,15 +597,60 @@ hr {
                                 <hr />
 
                                 <div>
-                                    <span class="text-secondary-d1 text-105">Thank you for your purchase</span>
+                                    <span class="text-secondary-d1 text-105">Easy bids</span>
+                                    <div>
+                                        <a href="/buy-now/{{ $invoice[0]->fk_auction }}" class="btn btn-info">View auction</a>
+                                    </div>
+                                    @if(empty($receipt->id))
                                     <form action="{{ url('/store_receipt') }}" method="POST" class="float-right" enctype="multipart/form-data">
                                         @csrf
                                         <input type="hidden" name="auction_id" value="{{ $invoice[0]->fk_auction }}">
                                         <input type="hidden" name="invoice_id" value="{{ $invoice[0]->id }}">
                                         <label for="">Attach payment document(Bank receipt or screenshot of transaction)</label>
-                                        <input type="file" name="receipt" class="form-control">
+                                        <input type="file" name="receipt" class="form-control" required>
                                         <button type="submit" class="btn btn-info btn-bold px-4 mt-2">Verify payment</button>
                                     </form>
+                                    @elseif($receipt->receipt_status == "DENIED")
+                                    <div class="alert alert-danger float-right w-50">
+                                    Your receipt has been denied, upload an authentic receipt to verify your purchase.
+                                    </div>
+                                    <form action="{{ url('/store_receipt') }}" method="POST" class="float-right" enctype="multipart/form-data">
+                                        @csrf
+                                        <input type="hidden" name="auction_id" value="{{ $invoice[0]->fk_auction }}">
+                                        <input type="hidden" name="invoice_id" value="{{ $invoice[0]->id }}">
+                                        <label for="">Attach payment document(Bank receipt or screenshot of transaction)</label>
+                                        <input type="file" name="receipt" class="form-control" required>
+                                        <button type="submit" class="btn btn-info btn-bold px-4 mt-2">Verify payment</button>
+                                    </form>
+                                    @elseif($receipt->receipt_status == "PENDING")
+                                    <div class="alert alert-success mt-2 w-50 text-center float-right">
+                                        Receipt has already been uploaded, await for verification to obtain your item.
+                                        Click <a href="" data-toggle="modal" data-target="#exampleModal">here</a> to view receipt.
+                                    </div>
+                                    <!--Bootstrap modal -->
+                                    <div class="modal fade" id="exampleModal" tabindex="-1"
+                                        role="dialog" aria-labelledby="exampleModalLabel"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <!-- Modal heading -->
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">
+                                                        Receipt
+                                                    </h5>
+                                                </div>
+                                                <!-- Modal body with image -->
+                                                <div class="modal-body">
+                                                    <img  width="450" height="600" src="/receipt/{{ $receipt->receipt_image }}" alt="product">
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>

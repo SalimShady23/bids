@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('fk_user')->constrained('users');
             $table->string('invoice_amount');
             $table->string('payment_method');
+            $table->string('invoice_type');
             $table->string('invoice_status')->default('PENDING');
             $table->timestamps();
         });

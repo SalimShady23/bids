@@ -56,7 +56,7 @@
                     </ul>
                     <ul class="cart-button-area">
                         <li>
-                            <a href="#0" class="cart-button"><i class="flaticon-shopping-basket"></i><span class="amount">08</span></a>
+                            <a href="#0" class="cart-button"><i class="flaticon-alarm"></i><span class="amount">{{ $data['count_notifications'] }}</span></a>
                         </li>                        
                         <li>
                             @if(Auth::check())
@@ -211,60 +211,38 @@
         </div>
         <div class="bottom-content">
             <div class="cart-products">
-                <h4 class="title">Shopping cart</h4>
+                <h4 class="title">Alerts</h4>
+                @if(count($data['notifications']) > 0)
+                @foreach($data['notifications'] as $notification)
                 <div class="single-product-item">
                     <div class="thumb">
-                        <a href="#0"><img src="{{ url('/assets/images/shop/shop01.jpg') }}" alt="shop"></a>
+                        <a href="#0"><img src="assets/images/history/04.png"></a>
                     </div>
                     <div class="content">
-                        <h4 class="title"><a href="#0">Color Pencil</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
+                        <h3 class="title">
+                            <a href="">
+                            @if($notification->user_role == 2)
+                            {{ ucwords(strtolower($notification->business_name)) }}
+                            @elseif($notification->user_role == 3)
+                            {{ ucwords(strtolower($notification->first_name)) }} {{ ucwords(strtolower($notification->last_name)) }}
+                            @endif
+                            </a>
+                        </h3>
+                        <div class="price" style="font-size: 15px;">
+                            @if($notification->notification_type == "BUY NOW")
+                            Has confirmed to buy now your {{ ucwords(strtolower($notification->product_name)) }}
+                            @elseif($notification->notification_type == "RECEIPT")
+                            Has uploaded receipt for your {{ ucwords(strtolower($notification->product_name)) }}
+                            @endif
+                        </div>
                     </div>
                 </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="{{ url('/assets/images/shop/shop02.jpg') }}" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Water Pot</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
+                @endforeach
+                @else
+                <div class="alert alert-warning">
+                There are no alerts currently
                 </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="{{ url('/assets/images/shop/shop03.jpg') }}" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Art Paper</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
-                </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="{{ url('/assets/images/shop/shop04.jpg') }}" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Stop Watch</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
-                </div>
-                <div class="single-product-item">
-                    <div class="thumb">
-                        <a href="#0"><img src="{{ url('/assets/images/shop/shop05.jpg') }}" alt="shop"></a>
-                    </div>
-                    <div class="content">
-                        <h4 class="title"><a href="#0">Comics Book</a></h4>
-                        <div class="price"><span class="pprice">$80.00</span> <del class="dprice">$120.00</del></div>
-                        <a href="#" class="remove-cart">Remove</a>
-                    </div>
-                </div>
-                <div class="btn-wrapper text-center">
-                    <a href="#0" class="custom-button"><span>Checkout</span></a>
-                </div>
+                @endif
             </div>
         </div>
     </div>
@@ -306,8 +284,7 @@
                         <div class="product-details-header">
                             <h2 class="title">{{ $auction[0]->auction_title }}</h2>
                             <ul>
-                                <li>Listing ID: 14076242</li>
-                                <li>Item #: 7300-3356862</li>
+                                <li>Auction ID: {{ $auction[0]->id }}</li>
                             </ul>
                         </div>
                         <ul class="price-table mb-30">
@@ -328,11 +305,19 @@
                                 <h3 class="price">{{ number_format($auction[0]->buy_now_price) }} TZS</h3>
                             </li>
                             <li>
-                            @if(Auth::user()->user_status == "PENDING")
+                            @if(Auth::check() && Auth::user()->user_status == "PENDING")
                             <div class="alert alert-warning">
                                 Complete profile details to buy now, click <a href="/profile">here</a> to complete registration details
                             </div>
-                            @else 
+                            @elseif(!Auth::check())
+                            <div class="alert alert-warning w-100">
+                                Sign in first in order to confirm buy now, click <a href="/sign-in">here</a> to sign in
+                            </div>
+                            @elseif(!empty($invoice->id) && $invoice->fk_user == Auth::user()->id)
+                            <div class="alert alert-primary">
+                            Invoice has already been processed and you are required to pay the required amount to obtain item. Click <a href="/invoice/{{ $invoice->id }}" class="text-success"><b>here</b></a> to view invoice.
+                            </div>
+                            @else
                             <form action="{{ url('/buy_now') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="auction_id" value="{{ $auction[0]->id }}">
@@ -364,17 +349,14 @@
                                         <img src="{{ url('/assets/images/product/icon1.png') }}" alt="product">
                                     </div>
                                     <div class="content">
-                                        <h3 class="count-title"><span class="counter">61</span></h3>
-                                        <p>Active Bidders</p>
-                                    </div>
-                                </div>
-                                <div class="side-counter-item">
-                                    <div class="thumb">
-                                        <img src="{{ url('/assets/images/product/icon2.png') }}" alt="product">
-                                    </div>
-                                    <div class="content">
-                                        <h3 class="count-title"><span class="counter">203</span></h3>
-                                        <p>Watching</p>
+                                        <h3 class=""><span class="">
+                                            @if($auction[0]->buy_now_status == 0)
+                                                0 
+                                            @elseif($auction[0]->num_bids == 1)
+                                                1  
+                                            @endif
+                                        </span></h3>
+                                        <p>Buy now</p>
                                     </div>
                                 </div>
                                 <div class="side-counter-item">
@@ -401,14 +383,6 @@
                                 <img src="{{ url('/assets/images/product/tab1.png') }}" alt="product">
                             </div>
                             <div class="content">Description</div>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#delevery" data-toggle="tab">
-                            <div class="thumb">
-                                <img src="{{ url('/assets/images/product/tab2.png') }}" alt="product">
-                            </div>
-                            <div class="content">Delivery Options</div>
                         </a>
                     </li>
                 </ul>
@@ -438,42 +412,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane fade show" id="delevery">
-                    <div class="shipping-wrapper">
-                        <div class="item">
-                            <h5 class="title">shipping</h5>
-                            <div class="table-wrapper">
-                                <table class="shipping-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Available delivery methods </th>
-                                            <th>Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Customer Pick-up (within 10 days)</td>
-                                            <td>$0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Standard Shipping (5-7 business days)</td>
-                                            <td>Not Applicable</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Expedited Shipping (2-4 business days)</td>
-                                            <td>Not Applicable</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <h5 class="title">Notes</h5>
-                            <p>Please carefully review our shipping and returns policy before committing to a bid.
-                            From time to time, and at its sole discretion, Sbidu may change the prevailing fee structure for shipping and handling.</p>
-                        </div>
-                    </div>
-                </div>               
             </div>
         </div>
     </section>

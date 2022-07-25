@@ -15,7 +15,32 @@ class invoiceController extends Controller
      */
     public function index()
     {
-        
+        // fetch user invoices 
+        $invoices = DB::table('invoice')
+        ->join('auction', 'invoice.fk_auction', '=', 'auction.id')
+        ->select('auction.*', 'invoice.*')
+        ->where('invoice.fk_user', '=', Auth::user()->id)
+        ->get();
+
+        $paid_invoices = DB::table('invoice')
+        ->join('auction', 'invoice.fk_auction', '=', 'auction.id')
+        ->select('auction.*', 'invoice.*')
+        ->where([
+            ['invoice.fk_user', '=', Auth::user()->id],
+            ['invoice.invoice_status', '=', 'PAID'],
+        ])
+        ->get();
+
+        $unpaid_invoices = DB::table('invoice')
+        ->join('auction', 'invoice.fk_auction', '=', 'auction.id')
+        ->select('auction.*', 'invoice.*')
+        ->where([
+            ['invoice.fk_user', '=', Auth::user()->id],
+            ['invoice.invoice_status', '=', 'PENDING'],
+        ])
+        ->get();
+
+        return view('invoices', compact('invoices', 'paid_invoices', 'unpaid_invoices'));
     }
 
     /**
@@ -59,8 +84,10 @@ class invoiceController extends Controller
 
         $tax       = $invoice[0]->invoice_amount / 10;
         $subtotal = $invoice[0]->invoice_amount - $tax; 
+
+        $receipt = DB::table('receipt')->where('fk_invoice', $id)->first();
     
-        return view('/invoice', compact('invoice', 'tax', 'subtotal'));
+        return view('/invoice', compact('invoice', 'tax', 'subtotal', 'receipt'));
     }
 
     /**

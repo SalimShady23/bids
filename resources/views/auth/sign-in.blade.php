@@ -55,9 +55,15 @@
                         </li>
                     </ul>
                     <ul class="cart-button-area">
+                        @if(Auth::check())
                         <li>
-                            <a href="#0" class="cart-button"><i class="flaticon-shopping-basket"></i><span class="amount">08</span></a>
-                        </li>                        
+                            <a href="#" class="cart-button"><i class="flaticon-alarm"></i>
+                            <span class="amount">
+                                {{ $data['count_notifications'] }}
+                            </span>
+                        </a>
+                        </li> 
+                        @endif                        
                         <li>
                             @if(Auth::check())
                             <a href="#0" class="user-button">

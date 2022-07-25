@@ -9,6 +9,8 @@ use App\Models\Auction;
 use App\Models\Bid;
 use App\Models\Invoice;
 use App\Models\User;
+use App\Models\Notification;
+use DateTime;
 
 class bidController extends Controller
 {
@@ -54,6 +56,8 @@ class bidController extends Controller
         $minimum_bid_price = $request->input('minimum_bid_price');
         $num_bids          = $request->input('num_bids');
         $bid_increment     = $request->input('bid_increment');
+        $start_date        = $request->input('start_date');
+        $end_date          = $request->input('end_date');
 
         // store total amount value in variable 
         $min_bid_increment = $minimum_bid_price + $bid_increment;
@@ -100,6 +104,19 @@ class bidController extends Controller
             } else {
                 echo "Failed to bid";;
             }
+
+            // $datetime1 = new DateTime($start_date);
+            // $datetime2 = new DateTime($end_date);
+            // $interval = $datetime1->diff($datetime2);
+            // $days = $interval->format('%a');//now do whatever you like with $days
+
+            // $to = \Carbon\Carbon::createFromFormat('Y-m-d', $start_date);
+
+            // $from = \Carbon\Carbon::createFromFormat('Y-m-d', $end_date);
+
+            // $diff_in_days = $to->diffInDays($from);
+
+            // print_r($diff_in_days); // Output: 1
 
         }
         
@@ -155,11 +172,8 @@ class bidController extends Controller
         // store form values in variable 
         $auction_id = $request->input('auction_id');
         $invoice_amount = $request->input('invoice_amount');
-
         
-        $invoiceObj = Invoice::find($auction_id);
-
-        
+        $invoiceObj = DB::table('invoice')->where('fk_auction', $auction_id)->first();
 
         if (empty($invoiceObj)) {
 
@@ -176,14 +190,30 @@ class bidController extends Controller
             $invoice->invoice_type   = "BUY NOW";
 
             if ($invoice->save()) {
+
+                $buy_now_update = DB::table('auction')
+                ->where('id', $auction_id)
+                ->update(['buy_now_status' => 1]);
+
+                // create a new instance of notification
+                $notification = new Notification;
+                $notification->fk_user              = Auth::user()->id;
+                $notification->fk_auction           = $auction_id;
+                $notification->notification_type    = "BUY NOW";
+                $notification->notification_status  = "UNREAD";
+                $notification->save();
+
                 return redirect('/invoice/'.$invoice->id);
+
             }
 
-              
-        } else if ($auction_id == $invoiceObj->fk_auction && Auth::user()->id == $invoiceObj->fk_user) {
-
-            return redirect('/invoice')->with('invoiceError', 'Invoice has already been created, pay the required amout to obtain your item');
         }
+              
+        // } else if ($auction_id == $invoiceObj->fk_auction && Auth::user()->id == $invoiceObj->fk_user) {
+
+        //     return redirect('/invoice')->with('invoiceError', 'Invoice has already been created, pay the required amount to obtain your item');
+
+        // }
 
     }
 }

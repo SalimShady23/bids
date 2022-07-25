@@ -56,9 +56,30 @@ class paymentController extends Controller
      */
     public function show($id)
     {
+        // $user = DB::table('receipt')
+        // ->join('invoice', 'receipt.fk_invoice', '=', 'invoice.id')
+        // ->join('users', 'receipt.fk_user', '=', 'users.id')
+        // ->select('users.*', 'invoice.*', 'receipt.*')
+        // ->where([
+        //     ['invoice.invoice_type', '=', 'BUY NOW'],
+        //     ['receipt.fk_user', '=', Auth::user()->id],
+        // ])
+        // ->get();
+
         $user = User::find($id);
+
+        $invoice = DB::table('invoice')
+        ->where('fk_user', '=', $id)
+        ->get();
+
+        $data = array(
+            
+            'user'    => $user,
+            'invoice' => $invoice
+
+        );
   
-        return response()->json($user);
+        return response()->json($data);
     }
 
     /**
@@ -103,25 +124,39 @@ class paymentController extends Controller
         $invoice_id     = $request->input('invoice_id');
         $auction_id     = $request->input('auction_id');
 
+        echo $receipt_action;
+        echo "<br>";
+        echo $receipt_id;
+        echo "<br>";
+        echo $invoice_id;
+        echo "<br>";
+        echo $auction_id;
 
-        if ($receipt_action == "APPROVE") {
 
-            $receipt_update = DB::table('receipt')
-            ->where('id', $receipt_id)
-            ->update(['receipt_status' => 'PAID']);
+        // if ($receipt_action == "APPROVE") {
 
-            $invoice_update = DB::table('invoice')
-            ->where('id', $invoice_id)
-            ->update(['invoice_status' => 'PAID']);
+        //     $receipt_update = DB::table('receipt')
+        //     ->where('id', $receipt_id)
+        //     ->update(['receipt_status' => 'PAID']);
 
-            $auction_update = DB::table('auction')
-            ->where('id', $auction_id)
-            ->update(['auction_status' => 'COMPLETE']);
+        //     $invoice_update = DB::table('invoice')
+        //     ->where('id', $invoice_id)
+        //     ->update(['invoice_status' => 'PAID']);
 
-            return redirect('/admin/buy_now_payments')->with('paymentSuccess', 'Payment has been verified successfully');
+        //     $auction_update = DB::table('auction')
+        //     ->where('id', $auction_id)
+        //     ->update(['auction_status' => 'COMPLETE']);
+
+        //     return redirect('/admin/buy_now_payments')->with('paymentSuccess', 'Payment has been verified successfully');
             
-        }
+        // } else if ($receipt_action == "DENY") {
 
+        //     $receipt_update = DB::table('receipt')
+        //     ->where('fk_auction', $auction_id)
+        //     ->update(['receipt_status' => 'DENIED']);
+
+        //     return redirect('/admin/buy_now_payments')->with('paymentSuccess', 'Payment has been denied successfully');
+        // }
        
     }
 }

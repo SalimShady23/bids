@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('reserve_price');
             $table->string('minimum_bid_price');
             $table->boolean('buy_now');
+            $table->boolean('buy_now_status');
             $table->string('buy_now_price')->nullable();
             $table->string('product_name');
             $table->string('product_description');

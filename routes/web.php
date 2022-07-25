@@ -11,6 +11,8 @@ use App\Http\Controllers\auctionController;
 use App\Http\Controllers\invoiceController;
 use App\Http\Controllers\receiptController;
 use App\Http\Controllers\paymentController;
+use App\Http\Controllers\notificationController;
+use App\Http\Controllers\dashboardController;
 use Illuminate\Http\Request;
 
 
@@ -31,7 +33,7 @@ Route::get('/', function () {
 
 Route::get('/sign-in', function () {
     return view('auth.sign-in');
-});
+})->name('sign-in');
 
 Route::get('/sign-up', function () {
     return view('auth.sign-up');
@@ -129,6 +131,14 @@ Route::get('/invoices', function () {
     return view('invoices');
 })->middleware('auth')->name('invoices');
 
+Route::get('/admin/notifications', function () {
+    return view('admin.notifications');
+})->middleware('auth')->name('notifications');
+
+Route::get('my-alerts', function () {
+    return view('my-alerts');
+})->middleware('auth')->name('my-alerts');
+
 Route::get('/auction', function () {
     return view('auction');
 })->name('auction');
@@ -141,6 +151,9 @@ Route::get('/admin/inactive_users', [usersController::class, 'inactiveUsers']);
 Route::get('/admin/create_category',[categoryController::class, 'index']);
 Route::get('/admin/categories', [categoryController::class, 'retrieveCategory']);
 Route::get('/admin/subcategories', [subCategoryController::class, 'index']);
+
+// dashboard controller routes
+Route::get('/dashboard', [dashboardController::class, 'index']);
 
 // auction controller routes
 Route::post('/create_auction', [auctionController::class, 'store']);
@@ -178,6 +191,7 @@ Route::post('/edit_subcategory', [subCategoryController::class, 'update']);
 
 // invoice controller routes
 Route::get('/invoice/{id}', [invoiceController::class, 'show']);
+Route::get('/invoices', [invoiceController::class, 'index']);
 
 // receipt controller routes 
 Route::post('/store_receipt', [receiptController::class, 'store']);
@@ -186,5 +200,10 @@ Route::post('/store_receipt', [receiptController::class, 'store']);
 Route::get('/admin/buy_now_payments', [paymentController::class, 'index']);
 Route::get('buy_now_payments/{id}', [paymentController::class, 'show'])->name('buy_now_payments.show');
 Route::post('/controlPayment', [paymentController::class, 'controlPayment']);
+
+//notification controller routes
+Route::get('/admin/notifications', [notificationController::class, 'index']);
+Route::get('notifications/{id}', [notificationController::class, 'show'])->name('notifications.show');
+Route::get('/my-alerts', [notificationController::class, 'alerts']);
 
 require __DIR__.'/auth.php';

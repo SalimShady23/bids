@@ -52,7 +52,7 @@ class subCategoryController extends Controller
         $subcategory->fk_category       = $request->input("category_title");
 
         if ($subcategory->save()) {
-            return redirect('/admin/subcategories')->with('success', 'ub Category created successfully');
+            return redirect('/admin/subcategories')->with('success', 'Sub Category created successfully');
         } else {
             echo "Failed to insert category";
         }
